@@ -42,6 +42,7 @@ RUN git clone --depth=1 https://github.com/ocicl/ocicl.git && \
 
 RUN ocicl install cl-github-v3 legit cl-ppcre split-sequence
 
+RUN mkdir repos
 RUN chmod -R 777 ${HOME}
 
-CMD bash -c "pwd && ls -l && sbcl --load manage.lisp"
+CMD sbcl --load manage.lisp

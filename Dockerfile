@@ -15,6 +15,8 @@ RUN dnf -y update && dnf -y install git bzip2 make
 RUN groupadd -r -g 1001 ocicl-manage && \
     useradd -r -u 1001 -g ocicl-manage -m -d ${HOME} -s /bin/bash ocicl-manage && \
     chmod go+rwx ${HOME}
+COPY manage.lisp .
+RUN chown -R ocicl-manage ${HOME}
 
 USER 1001
 
@@ -37,9 +39,8 @@ RUN git clone --depth=1 https://github.com/ocicl/ocicl.git && \
     ocicl version && \
     ocicl setup > ~/.sbclrc
 
-COPY manage.lisp .
-
 RUN ocicl install cl-github-v3 legit cl-ppcre split-sequence
-RUN mkdir repos
+
+RUN chmod -R 777 ${HOME}
 
 CMD sbcl --load manage.lisp

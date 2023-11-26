@@ -20,7 +20,7 @@ RUN chown -R ocicl-manage ${HOME}
 
 USER 1001
 
-WORKDIR ${HOME}
+WORKDIR /home/ocicl-manage
 
 RUN curl -L -O "https://downloads.sourceforge.net/project/sbcl/sbcl/${SBCL_VERSION}/sbcl-${SBCL_VERSION}-x86-64-linux-binary.tar.bz2" \
     && tar -xf sbcl-${SBCL_VERSION}-x86-64-linux-binary.tar.bz2 \

@@ -17,7 +17,7 @@ RUN groupadd -r -g 1001 ocicl-manage && \
     chmod go+rwx ${HOME}
 
 COPY manage.lisp /home/ocicl-manage/manage.lisp
-RUN chmod -R 777 ${HOME}
+RUN chown -R ocicl-manage /home/ocicl-manage
 
 USER 1001
 
@@ -41,5 +41,7 @@ RUN git clone --depth=1 https://github.com/ocicl/ocicl.git && \
     ocicl setup > ~/.sbclrc
 
 RUN ocicl install cl-github-v3 legit cl-ppcre split-sequence
+
+RUN chmod -R 777 ${HOME}
 
 CMD bash -c "pwd && ls -l && sbcl --load manage.lisp"

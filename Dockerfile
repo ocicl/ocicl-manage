@@ -43,4 +43,4 @@ RUN ocicl install cl-github-v3 legit cl-ppcre split-sequence
 
 RUN chmod -R 777 ${HOME}
 
-CMD sbcl --load manage.lisp
+CMD bash -c "pwd && ls -l && sbcl --load manage.lisp"

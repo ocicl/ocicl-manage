@@ -13,6 +13,13 @@
 ;; Pull all ocicl repos from github
 (defvar *repos* (cl-github:list-repositories :org "ocicl"))
 
+;; Hide all of our secrets
+(setf *standard-output* (make-instance 'privacy-output-stream:privacy-output-stream
+                                       :stream *standard-output*
+                                       :secrets (list cl-github:*username*
+                                                      cl-github:*password*
+                                                      +github-pat+)))
+
 ;; Remove admin repos/directories
 (dolist (repo '("ocicl" "ocicl-admin" "ocicl-manage" "ocicl-sandbox" "ocicl-action" "request-system-additions-here" "friends" ".github" ))
   (setf *repos* (remove-if (lambda (n) (string= repo (getf n :name))) *repos*)))
@@ -186,13 +193,6 @@
                   (legit:git-commit :message "Update")
                   (legit:git-push)))))))
 |#
-
-;;;
-(setf *standard-output* (make-instance 'privacy-output-stream:privacy-output-stream
-                                       :stream *standard-output*
-                                       :secrets (list cl-github:*username*
-                                                      cl-github:*password*
-                                                      +github-pat+)))
 
 ;;;
 ;;; Update all git repos to latest commit

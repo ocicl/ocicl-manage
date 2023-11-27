@@ -2,6 +2,7 @@
 (asdf:load-system :legit)
 (asdf:load-system :cl-ppcre)
 (asdf:load-system :split-sequence)
+(asdf:load-system :privacy-output-stream)
 
 (setf cl-github:*username* (uiop:getenv "GITHUB_USER"))
 (setf cl-github:*password* (uiop:getenv "GITHUB_PASSWORD"))
@@ -185,6 +186,13 @@
                   (legit:git-commit :message "Update")
                   (legit:git-push)))))))
 |#
+
+;;;
+(setf *standard-output* (make-instance 'privacy-output-stream:privacy-output-stream
+                                       :stream *standard-output*
+                                       :secrets (list cl-github:*username*
+                                                      cl-github:*password*
+                                                      +github-pat+)))
 
 ;;;
 ;;; Update all git repos to latest commit

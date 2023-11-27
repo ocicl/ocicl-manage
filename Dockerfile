@@ -40,7 +40,7 @@ RUN git clone --depth=1 https://github.com/ocicl/ocicl.git && \
     ocicl version && \
     ocicl setup > ~/.sbclrc
 
-RUN ocicl install cl-github-v3 legit cl-ppcre split-sequence
+RUN ocicl install cl-github-v3 legit cl-ppcre split-sequence privacy-output-stream
 
 RUN mkdir repos
 RUN chmod -R 777 ${HOME}

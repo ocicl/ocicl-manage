@@ -19,6 +19,11 @@
                                        :secrets (list cl-github:*username*
                                                       cl-github:*password*
                                                       +github-pat+)))
+(setf *error-output* (make-instance 'privacy-output-stream:privacy-output-stream
+                                    :stream *error-output*
+                                    :secrets (list cl-github:*username*
+                                                   cl-github:*password*
+                                                   +github-pat+)))
 
 ;; Remove admin repos/directories
 (dolist (repo '("ocicl" "ocicl-admin" "ocicl-manage" "ocicl-sandbox" "ocicl-action" "request-system-additions-here" "friends" ".github" ))

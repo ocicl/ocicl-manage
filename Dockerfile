@@ -42,7 +42,11 @@ RUN git clone --depth=1 https://github.com/ocicl/ocicl.git && \
 
 RUN ocicl install cl-github-v3 legit cl-ppcre split-sequence privacy-output-stream
 
+RUN curl -L -O "https://github.com/atgreen/green-orb/releases/download/v0.2.1/green-orb-0.2.1-linux-amd64.tar.gz" \
+    && tar xf green-orb-0.2.1-linux-amd64.tar.gz \
+    && rm green-orb-0.2.1-linux-amd64.tar.gz
+
 RUN mkdir repos
 RUN chmod -R 777 ${HOME}
 
-CMD sbcl --load manage.lisp
+CMD ./orb sbcl --load manage.lisp

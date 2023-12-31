@@ -44,7 +44,8 @@ RUN ocicl install cl-github-v3 legit cl-ppcre split-sequence privacy-output-stre
 
 RUN curl -L -O "https://github.com/atgreen/green-orb/releases/download/v0.2.1/green-orb-0.2.1-linux-amd64.tar.gz" \
     && tar xf green-orb-0.2.1-linux-amd64.tar.gz \
-    && rm green-orb-0.2.1-linux-amd64.tar.gz
+    && rm green-orb-0.2.1-linux-amd64.tar.gz \
+    && echo "# Replace this file to enable the orb" > green-orb.yaml
 
 RUN mkdir repos
 RUN chmod -R 777 ${HOME}

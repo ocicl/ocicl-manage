@@ -118,7 +118,7 @@
                (t (error 'api-error
                          :http-status status-code
                          :http-headers headers
-                         :response response)))))))))
+                         :response response))))))))))
 
 (defmacro booleanize-parameters (plist &rest keys)
   ;; unhygienic

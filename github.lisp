@@ -108,6 +108,7 @@
              (print "........................")
              (cond
                ((< status-code 300)
+                (format ">>> ~A: ~A~%" status-code response)
                 (values response headers))
                ((and (= status-code 403) ratelimit-wait)
                 (format t "~&Github is rate limiting API calls. Sleeping for ~A seconds.~%" ratelimit-wait)

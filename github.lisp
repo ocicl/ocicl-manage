@@ -57,6 +57,7 @@
   (- (get-universal-time) +unix-epoch+))
 
 (defun api-command (url &key body (method :get) (username *username*) (password *password*) parameters)
+  (block api-command-fn
   (let ((ratelimit-retry-count 0)
         (ratelimit-wait 0))
 
@@ -109,7 +110,7 @@
              (cond
                ((< status-code 300)
                 (format t ">>> ~A: ~A~%" status-code response)
-                (values response headers))
+                (return-from api-command-fn (values response headers)))
                ((and (= status-code 403) ratelimit-wait)
                 (format t "~&Github is rate limiting API calls. Sleeping for ~A seconds.~%" ratelimit-wait)
                 (sleep ratelimit-wait)

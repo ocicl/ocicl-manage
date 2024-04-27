@@ -57,7 +57,7 @@
   (- (get-universal-time) +unix-epoch+))
 
 (defun api-command (url &key body (method :get) (username *username*) (password *password*) parameters)
-  (let ((ratelimit-retry 0)
+  (let ((ratelimit-retry-count 0)
         (retelimit-wait 0))
 
     ;; Handle rate limit errors according to Github's best practices
@@ -74,8 +74,8 @@
                       (parse-integer retry-after))
                      (ratelimit-reset
                       (- (parse-integer ratelimit-reset) (get-unix-time)))
-                     ((< ratelimit-retry +api-retry-max+)
-                      (incf ratelimit-retry)
+                     ((< ratelimit-retry-count +ratelimit-retry-max+)
+                      (incf ratelimit-retry-count)
                       (setf ratelimit-wait (max 60 (* 2 ratelimit-wait))))
                      (t (error 'api-error
                                :http-status 403

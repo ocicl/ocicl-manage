@@ -155,6 +155,8 @@
          (return))
        (multiple-value-bind (list headers)
            (api-command url :method :get)
+         (format t "~&==== list-repositories: ~A~%" url)
+         (print list)
          (setf repos (append list repos))
          (setf url nil)
          (do-header-links

@@ -101,6 +101,11 @@
                   (response (when body
                               (yason:parse (flex:octets-to-string body :external-format :utf-8))))
                   (ratelimit-wait (get-ratelimit-wait headers)))
+             (print "r ........................")
+             (print response)
+             (print "h ........................")
+             (print headers)
+             (print "........................")
              (cond
                ((< status-code 300)
                 (values response headers))

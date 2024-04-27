@@ -158,20 +158,21 @@
                  "/user/repos?per_page=100"))
         (repos nil))
     (loop
-       (unless url
-         (return))
-       (multiple-value-bind (list headers)
-           (api-command url :method :get)
-         (format t "~&==== list-repositories: ~A~%" url)
-         (print list)
-         (setf repos (append list repos))
-         (setf url nil)
-         (do-header-links
-             (lambda (link)
-               (cl-ppcre:do-register-groups (next)
-                   ("<(?:https://[^/]+)(/[^<>]+)>; rel=\"next\""
-                    link)
-                 (format t "~&Following next link ~S~%" next)
-                 (setf url next)))
-           headers)))
+      (unless url
+        (return))
+      (multiple-value-bind (list headers)
+          (api-command url :method :get)
+        (format t "~&==== list-repositories: ~A~%" url)
+        (format t "L: ~A~%" list)
+        (format t "H: ~A~%" headers)
+        (setf repos (append list repos))
+        (setf url nil)
+        (do-header-links
+            (lambda (link)
+              (cl-ppcre:do-register-groups (next)
+                  ("<(?:https://[^/]+)(/[^<>]+)>; rel=\"next\""
+                   link)
+                (format t "~&Following next link ~S~%" next)
+                (setf url next)))
+          headers)))
     repos))

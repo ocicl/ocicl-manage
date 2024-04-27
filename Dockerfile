@@ -42,7 +42,7 @@ RUN git clone --depth=1 https://github.com/ocicl/ocicl.git && \
 
 RUN ocicl install cl-github-v3 legit cl-ppcre split-sequence privacy-output-stream
 COPY github.lisp /home/ocicl-manage/github.lisp
-RUN cp github.lisp systems/cl-github-v3
+RUN cp github.lisp systems/cl-github-v3*
 
 RUN curl -L -O "https://github.com/atgreen/green-orb/releases/download/v0.2.1/green-orb-0.2.1-linux-amd64.tar.gz" \
     && tar xf green-orb-0.2.1-linux-amd64.tar.gz \

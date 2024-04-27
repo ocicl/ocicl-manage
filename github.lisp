@@ -66,6 +66,8 @@
 
     (flet ((get-ratelimit-wait (headers)
              "Return the number of seconds to wait before retrying."
+             (print "+++ RATE LIMITED +++")
+             (print headers)
              (let ((retry-after (cdr (assoc :RETRY-AFTER headers)))
                    (ratelimit-reset (cdr (assoc :X-RATELIMIT-RESET headers))))
                (+ +ratelimit-slop-buffer+

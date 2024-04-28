@@ -9,8 +9,11 @@
 
 (in-package #:cl-github)
 
-(defparameter +ratelimit-retry-max+ 10)
-(defparameter +ratelimit-slop-buffer+ 2)
+(defparameter +ratelimit-retry-max+ 8
+  "Number of retries before failing")
+
+(defparameter +ratelimit-min-wait+ 2
+  "Minimum number of seconds to wait when rate limited")
 
 (defvar *username* nil
   "Username to use for API calls")
@@ -57,7 +60,6 @@
   (- (get-universal-time) +unix-epoch+))
 
 (defun api-command (url &key body (method :get) (username *username*) (password *password*) parameters)
-  (block api-command-fn
   (let ((ratelimit-retry-count 0)
         (ratelimit-wait 0))
 
@@ -67,23 +69,21 @@
 
     (flet ((get-ratelimit-wait (headers)
              "Return the number of seconds to wait before retrying."
-             (print "+++ RATE LIMITED +++")
-             (print headers)
              (let ((retry-after (cdr (assoc :RETRY-AFTER headers)))
                    (ratelimit-reset (cdr (assoc :X-RATELIMIT-RESET headers))))
-               (+ +ratelimit-slop-buffer+
-                  (cond
-                    (retry-after
-                     (parse-integer retry-after))
-                    (ratelimit-reset
-                     (- (parse-integer ratelimit-reset) (get-unix-time)))
-                    ((< ratelimit-retry-count +ratelimit-retry-max+)
-                     (incf ratelimit-retry-count)
-                     (setf ratelimit-wait (max 60 (* 2 ratelimit-wait))))
-                    (t (error 'api-error
-                               :http-status 403
-                               :http-headers headers
-                               :response "Github API rate limit retries exceeded")))))))
+               (max +ratelimit-min-wait+
+                    (cond
+                      (retry-after
+                       (parse-integer retry-after))
+                      (ratelimit-reset
+                       (- (parse-integer ratelimit-reset) (get-unix-time)))
+                      ((< ratelimit-retry-count +ratelimit-retry-max+)
+                       (incf ratelimit-retry-count)
+                       (setf ratelimit-wait (max 60 (* 2 ratelimit-wait))))
+                      (t (error 'api-error
+                                :http-status 403
+                                :http-headers headers
+                                :response "Github API rate limit retries exceeded")))))))
 
       (tagbody
        :retry
@@ -101,24 +101,18 @@
                   (yason:*parse-object-key-fn* 'github-keyword-to-keyword)
                   (response (when body
                               (yason:parse (flex:octets-to-string body :external-format :utf-8))))
-                  (ratelimit-wait (get-ratelimit-wait headers)))
-             (print "r ........................")
-             (print response)
-             (print "h ........................")
-             (print headers)
-             (print "........................")
+                  (ratelimit-wait (when (= status-code 403) (get-ratelimit-wait headers))))
              (cond
                ((< status-code 300)
-                (format t ">>> ~A: ~A~%" status-code response)
-                (return-from api-command-fn (values response headers)))
-               ((and (= status-code 403) ratelimit-wait)
+                (return-from api-command (values response headers)))
+               (ratelimit-wait
                 (format t "~&Github is rate limiting API calls. Sleeping for ~A seconds.~%" ratelimit-wait)
                 (sleep ratelimit-wait)
                 (go :retry))
                (t (error 'api-error
                          :http-status status-code
                          :http-headers headers
-                         :response response))))))))))
+                         :response response)))))))))
 
 (defmacro booleanize-parameters (plist &rest keys)
   ;; unhygienic
@@ -162,9 +156,6 @@
         (return))
       (multiple-value-bind (list headers)
           (api-command url :method :get)
-        (format t "~&==== list-repositories: ~A~%" url)
-        (format t "L: ~A~%" list)
-        (format t "H: ~A~%" headers)
         (setf repos (append list repos))
         (setf url nil)
         (do-header-links
